@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    # The official images keep old Pythons such as 3.8 available, whatever
+    # the runner image ships.
+    container: python:${{ matrix.python-version }}-slim
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.8", "3.12"]
+    env:
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+      PIP_ROOT_USER_ACTION: ignore
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install
+        run: |
+          python -m pip install -q pytest
+          python -m pip install -q -e .
+      - name: Check there are no runtime dependencies
+        run: |
+          python - <<'EOF'
+          from importlib.metadata import requires
+          assert not requires("khqrpay"), requires("khqrpay")
+          EOF
+      - name: Test
+        run: python -m pytest -q

@@ -1,0 +1,47 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "khqrpay"
+dynamic = ["version"]
+description = "Official KHQRPay SDK for Python: accept KHQR payments in Cambodia from ABA, ACLEDA, Wing and every Bakong app."
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+authors = [{ name = "KHQRPay" }]
+keywords = ["khqr", "bakong", "aba", "acleda", "wing", "cambodia", "payments", "qr", "sdk"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Office/Business :: Financial",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Typing :: Typed",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://khqrpay.dev"
+Documentation = "https://khqrpay.dev/docs"
+Guide = "https://khqrpay.dev/guides/khqr-api-python"
+
+[tool.hatch.version]
+path = "src/khqrpay/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/khqrpay"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/khqrpay", "tests", "README.md", "LICENSE", "pyproject.toml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
