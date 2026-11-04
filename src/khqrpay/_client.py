@@ -346,8 +346,16 @@ class KHQRPay:
             raise _api_error(err.code, raw, err.headers) from None
         except (urllib.error.URLError, http.client.HTTPException, OSError) as err:
             reason = getattr(err, "reason", None) or err
+            hint = ""
+            if "CERTIFICATE_VERIFY_FAILED" in str(reason):
+                # Python from python.org on macOS ships without trusted certificates until its
+                # "Install Certificates.command" is run; nothing about the request itself is wrong.
+                hint = (
+                    " Your Python can't verify HTTPS certificates. On macOS with Python from"
+                    " python.org, run \"Install Certificates.command\" in its Applications folder."
+                )
             raise KHQRPayError(
-                "network_error", "Could not reach KHQRPay: %s" % (reason,), status=0
+                "network_error", "Could not reach KHQRPay: %s.%s" % (reason, hint), status=0
             ) from err
 
         payload = _parse_json(raw)

@@ -356,3 +356,19 @@ def test_base_url_with_a_path_prefix(api):
     client = KHQRPay(TEST_KEY, base_url=api.base_url + "/proxy/")
     client.usage.retrieve()
     assert api.last.path == "/proxy/v1/usage"
+
+
+def test_certificate_failure_explains_the_macos_fix(monkeypatch):
+    import ssl
+    import urllib.error
+
+    client = khqrpay.KHQRPay("kp_test_example0000000000000000", base_url="https://127.0.0.1:9")
+
+    def refuse(*_args, **_kwargs):
+        raise urllib.error.URLError(ssl.SSLCertVerificationError("[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed"))
+
+    monkeypatch.setattr(client._opener, "open", refuse)
+    with pytest.raises(khqrpay.KHQRPayError) as info:
+        client.usage.retrieve()
+    assert info.value.code == "network_error"
+    assert "Install Certificates.command" in info.value.message

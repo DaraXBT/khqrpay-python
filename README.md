@@ -256,6 +256,10 @@ The status is `"scanned"`, `"paid"`, `"expired"` or `"failed"`. `simulate` only 
 
 For a step-by-step walkthrough, read [Accept KHQR payments with Python](https://khqrpay.dev/guides/khqr-api-python).
 
+## Troubleshooting
+
+**`network_error` with `CERTIFICATE_VERIFY_FAILED` on a Mac:** Python from python.org doesn’t trust any HTTPS certificates until you run **Install Certificates.command** (in `/Applications/Python 3.x/`). Run it once and try again. Nothing in your code needs to change.
+
 ## License
 
 MIT. See [LICENSE](LICENSE).
