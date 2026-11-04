@@ -6,7 +6,7 @@ import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any, Dict, List, Optional
 
-TEST_KEY = "kp_test_4eC39HqLyjWDarjtT1zdp7dc"
+TEST_KEY = "kp_test_example0000000000000000"
 
 
 class Recorded:
