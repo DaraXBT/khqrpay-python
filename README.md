@@ -41,7 +41,7 @@ from flask import redirect
 def checkout():
     payment = client.payments.create(
         {"amount": "16.88", "reference_id": "INV-2048"},
-        idempotency_key="order-INV-2048",
+        idempotency_key="INV-2048-attempt-1",  # one per checkout attempt
     )
     return redirect(payment["checkout_url"], code=303)
 ```
@@ -54,7 +54,7 @@ Amounts:
 - You may pass a number, such as `16.88` or `20000`. The SDK turns it into the same string, with no rounding.
 - `currency` is `"USD"` or `"KHR"`, and defaults to USD. When it differs from your ABA link’s currency, KHQRPay converts the amount. The payment’s `amount` and `currency` are what the payer pays. `requested_amount` and `requested_currency` are what you sent.
 
-Apart from turning a numeric amount into a string, the SDK sends your dict as the JSON body exactly as given. Every create also sends an `Idempotency-Key`. If you don’t pass one, the SDK makes a random one. Pass your own, tied to your order, so a retry gets the same payment back.
+Apart from turning a numeric amount into a string, the SDK sends your dict as the JSON body exactly as given. Every create also sends an `Idempotency-Key`. If you don’t pass one, the SDK makes a random one. Pass your own, one per checkout attempt (such as `INV-2048-attempt-1`), so a retry of that attempt gets the same payment back. Don’t reuse one key for the whole order: a customer who tries again after the QR expired would get the expired payment back.
 
 The other calls:
 
@@ -107,6 +107,8 @@ def khqrpay_webhook():
     except khqrpay.KHQRPayError:
         return "", 400
 
+    if event.get("test") is True or event.get("livemode") is not True:
+        return "", 200  # a test event or test-mode payment: nothing to fulfil
     if event["type"] == "payment.completed":
         payment = event["data"]["payment"]
         mark_order_paid(payment["reference_id"], event_id=event["id"])
@@ -137,6 +139,8 @@ def khqrpay_webhook(request):
     except khqrpay.KHQRPayError:
         return HttpResponse(status=400)
 
+    if event.get("test") is True or event.get("livemode") is not True:
+        return HttpResponse(status=200)  # a test event or test-mode payment: nothing to fulfil
     if event["type"] == "payment.completed":
         payment = event["data"]["payment"]
         mark_order_paid(payment["reference_id"], event_id=event["id"])
@@ -166,6 +170,8 @@ async def khqrpay_webhook(request: Request):
     except khqrpay.KHQRPayError:
         return Response(status_code=400)
 
+    if event.get("test") is True or event.get("livemode") is not True:
+        return Response(status_code=200)  # a test event or test-mode payment: nothing to fulfil
     if event["type"] == "payment.completed":
         payment = event["data"]["payment"]
         await mark_order_paid(payment["reference_id"], event_id=event["id"])
@@ -215,7 +221,7 @@ def create_payment(client, params, idempotency_key, attempts=4):
                 raise
             time.sleep(err.retry_after if err.retry_after is not None else 2 ** attempt)
 
-payment = create_payment(client, {"amount": "16.88", "reference_id": "INV-2048"}, "order-INV-2048")
+payment = create_payment(client, {"amount": "16.88", "reference_id": "INV-2048"}, "INV-2048-attempt-1")
 ```
 
 Branch on the code for the rest:

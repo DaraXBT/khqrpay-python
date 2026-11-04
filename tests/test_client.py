@@ -58,7 +58,7 @@ def test_defaults():
     client = KHQRPay(TEST_KEY)
     assert client.base_url == "https://khqrpay.dev"
     assert client.timeout == 30.0
-    assert khqrpay.__version__ == "0.1.0"
+    assert khqrpay.__version__ == "0.1.1"
 
 
 def test_base_url_and_timeout_are_overridable():
@@ -93,7 +93,7 @@ def test_create_sends_the_request_and_returns_the_payment(api, client, vectors):
     assert request.headers["Authorization"] == "Bearer " + TEST_KEY
     assert request.headers["Content-Type"] == "application/json"
     assert request.headers["Accept"] == "application/json"
-    assert request.headers["User-Agent"] == "khqrpay-python/0.1.0"
+    assert request.headers["User-Agent"] == "khqrpay-python/0.1.1"
     assert uuid.UUID(request.headers["Idempotency-Key"]).version == 4
     assert request.json() == vectors["createRequest"]["body"]
     assert list(request.json()) == list(vectors["createRequest"]["body"])
@@ -285,7 +285,7 @@ def test_retrieve_url_encodes_the_id(api, client, vectors):
     assert api.last.method == "GET"
     assert api.last.path == "/v1/payments/pay%2F..%2Fx%20y%3Fz%23w%25"
     assert api.last.headers["Authorization"] == "Bearer " + TEST_KEY
-    assert api.last.headers["User-Agent"] == "khqrpay-python/0.1.0"
+    assert api.last.headers["User-Agent"] == "khqrpay-python/0.1.1"
     assert "Content-Type" not in api.last.headers
     assert "Idempotency-Key" not in api.last.headers
     assert api.last.body == b""
