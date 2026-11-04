@@ -33,6 +33,8 @@ dependencies = []
 Homepage = "https://khqrpay.dev"
 Documentation = "https://khqrpay.dev/docs"
 Guide = "https://khqrpay.dev/guides/khqr-api-python"
+Source = "https://github.com/DaraXBT/khqrpay-python"
+Issues = "https://github.com/DaraXBT/khqrpay-python/issues"
 
 [tool.hatch.version]
 path = "src/khqrpay/_version.py"
